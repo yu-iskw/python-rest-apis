@@ -26,3 +26,4 @@ dependencies:
   - pillow=5.3.0
   - pip:
     - google-cloud-storage==1.13.0
+    - python-status
