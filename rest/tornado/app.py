@@ -19,6 +19,14 @@ model_path = os.path.join(get_project_dir(), 'model', 'iris.joblib')
 model = IrisModel(model_path=model_path)
 
 
+class HealthCheckHandler(web.RequestHandler):
+
+    def get(self):
+        response = {"status": "alive"}
+        self.set_status(status.HTTP_200_OK)
+        self.write(response)
+
+
 class IrisPredictHandler(web.RequestHandler):
     # SUPPORTED_METHODS = ("POST")
 
@@ -44,6 +52,7 @@ class IrisPredictHandler(web.RequestHandler):
 def make_app(host='localhost'):
     return tornado.web.Application([
         (r"/v1/predict", IrisPredictHandler),
+        (r"/healthcheck", HealthCheckHandler),
     ], default_host=host)
 
 
