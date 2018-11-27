@@ -14,12 +14,21 @@ install_aliases()
 from urllib.parse import urlencode  # noqa: E402
 
 
+class TestHealthCheckHandler(AsyncHTTPTestCase):
+    def get_app(self):
+        return app.make_app()
+
+    def test_get(self):
+        response = self.fetch('/healthcheck')
+        assert response.code == status.HTTP_200_OK
+
+
 class TestIrisPredictorHandler(AsyncHTTPTestCase):
 
     def get_app(self):
         return app.make_app()
 
-    def test_homepage(self):
+    def test_post_with_valid_params(self):
         data = {
             'sepal_length': 5.1,
             'sepal_width': 3.3,
@@ -32,3 +41,9 @@ class TestIrisPredictorHandler(AsyncHTTPTestCase):
         assert response.code == status.HTTP_200_OK
         assert response_json['prediction'] == 0
         assert response_json['inference_time'] is not None
+
+    def test_post_with_invalid_params(self):
+        data = {}
+        data = urlencode(data)
+        response = self.fetch('/v1/predict', method='POST', body=data)
+        assert response.code == status.HTTP_500_INTERNAL_SERVER_ERROR
