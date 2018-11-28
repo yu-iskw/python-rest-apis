@@ -1,15 +1,11 @@
-#!/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import print_function
-
 import os
 
+from time import time
 import status
 import numpy as np
 
-import tornado.ioloop
 from tornado import web
-from tornado.options import define, options
+from tornado.escape import json_decode
 
 from rest.model.iris import IrisModel
 from rest.utils import get_project_dir
@@ -28,19 +24,28 @@ class HealthCheckHandler(web.RequestHandler):
 
 
 class IrisPredictHandler(web.RequestHandler):
-    # SUPPORTED_METHODS = ("POST")
+
+    # def prepare(self):
+    #     if self.request.headers.get('Content-Type') != 'application/json':
+    #         raise HTTPError(status.HTTP_406_NOT_ACCEPTABLE)
 
     def post(self):
         response = {}
         try:
-            sepal_length = self.get_argument('sepal_length')
-            sepal_width = self.get_argument('sepal_width')
-            petal_length = self.get_argument('petal_length')
-            petal_width = self.get_argument('petal_width')
+            # Get request body.
+            request_json = json_decode(self.request.body)
+            sepal_length = request_json['sepal_length']
+            sepal_width = request_json['sepal_width']
+            petal_length = request_json['petal_length']
+            petal_width = request_json['petal_width']
 
+            # Predict.
+            start_time = time()
             X = np.array([[sepal_length, sepal_width, petal_length, petal_width]])
-            result = model.predict(X)
-            response = result
+            response = model.predict(X)
+            inference_time = time() - start_time
+
+            # Make the response.
             self.set_status(status.HTTP_200_OK)
             self.write(response)
         except Exception as e:
@@ -50,16 +55,16 @@ class IrisPredictHandler(web.RequestHandler):
 
 
 def make_app(host='localhost'):
-    return tornado.web.Application([
+    return web.Application([
         (r"/v1/predict", IrisPredictHandler),
         (r"/healthcheck", HealthCheckHandler),
     ], default_host=host)
 
 
-if __name__ == "__main__":
-    define('host', default='localhost', help='host')
-    define('port', default=8080, help='port to listen on')
-
-    application = make_app(host=options.host)
-    application.listen(options.port)
-    tornado.ioloop.IOLoop.current().start()
+# if __name__ == "__main__":
+#     define('host', default='localhost', help='host')
+#     define('port', default=8080, help='port to listen on')
+#
+#     application = make_app(host=options.host)
+#     application.listen(options.port)
+#     ioloop.IOLoop.current().start()

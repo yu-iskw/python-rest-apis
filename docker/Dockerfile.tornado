@@ -36,13 +36,5 @@ COPY . ./
 # Expose Port.
 EXPOSE 8080
 
-# Environment variables for uWSGI.
-ENV NUM_WORKERS 1
-ENV MAX_REQUESTS 10000
-ENV NUM_LISTENS 100
-
 # Run uWSGI
-CMD uwsgi --ini ./configs/uwsgi.ini \
-    -p ${NUM_WORKERS} \
-    --max-requests ${MAX_REQUESTS} \
-    --listen ${NUM_LISTENS}
+CMD ["python", "start_tornado.py"]

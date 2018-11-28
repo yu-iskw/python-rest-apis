@@ -6,7 +6,7 @@ import json
 import status
 
 from tornado.testing import AsyncHTTPTestCase
-from rest.tornado import app
+from rest.tornado_app import app
 
 # compatible importing urllib for python2 and 3.
 from future.standard_library import install_aliases
@@ -29,14 +29,15 @@ class TestIrisPredictorHandler(AsyncHTTPTestCase):
         return app.make_app()
 
     def test_post_with_valid_params(self):
+        headers = {'Content-Type': 'application/json'}
         data = {
             'sepal_length': 5.1,
             'sepal_width': 3.3,
             'petal_length': 1.7,
             'petal_width': 0.5,
         }
-        data = urlencode(data)
-        response = self.fetch('/v1/predict', method='POST', body=data)
+        data = json.dumps(data).encode('utf-8')
+        response = self.fetch('/v1/predict', method='POST', headers=headers, body=data)
         response_json = json.loads(response.body)
         assert response.code == status.HTTP_200_OK
         assert response_json['prediction'] == 0

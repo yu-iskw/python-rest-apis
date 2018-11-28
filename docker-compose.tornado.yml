@@ -1,7 +1,7 @@
 version: '2.3'
 services:
   server:
-    image: yuiskw/python-rest-apis-uwsgi:dev
+    image: yuiskw/python-rest-apis-tornado:dev
     container_name: server
     restart: always
     ports:
