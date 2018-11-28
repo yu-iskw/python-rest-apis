@@ -1,6 +1,5 @@
 import argparse
 import requests
-import json
 from time import time
 
 

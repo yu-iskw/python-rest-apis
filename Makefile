@@ -18,7 +18,7 @@ test:
 lint:
 	flake8
 
-build-docker:: build-docker/uwsgi
+build-docker:: build-docker/uwsgi build-docker/tornado
 
 build-docker/%:
 	docker build --rm -f docker/Dockerfile.$* -t $(BASE_DOCKER_IMAGE)-$*:dev .
