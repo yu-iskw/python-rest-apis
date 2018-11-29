@@ -9,6 +9,26 @@
 - vegeta
     - `brew install vegeta`
 
+
+## Commands
+```
+# Command to create, update and remove the conda environment.
+make create-conda
+make update-conda
+make remove-conda
+
+# lint and test
+make lint
+make test
+
+# Build the docker images
+make build-docker
+
+# Run docker container with docker-compose.
+make run-docker/tornado
+make run-docker/uwsgi
+```
+
 ## Motivation
 I am looking for the best web framework and server in python for machine learning microservices.
 I saw some articles that uWSGI's perormance is not good with high concurrencies.
