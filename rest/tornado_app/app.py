@@ -7,13 +7,6 @@ import numpy as np
 from tornado import web
 from tornado.escape import json_decode
 
-from rest.model.iris import IrisModel
-from rest.utils import get_project_dir
-
-# Load model
-model_path = os.path.join(get_project_dir(), 'model', 'iris.joblib')
-model = IrisModel(model_path=model_path)
-
 
 class HealthCheckHandler(web.RequestHandler):
 
@@ -24,10 +17,19 @@ class HealthCheckHandler(web.RequestHandler):
 
 
 class IrisPredictHandler(web.RequestHandler):
+    model = None
+
+    def initialize(self, model):
+        # model is singleton.
+        if self.__class__.model is None:
+            self.__class__.model = model
 
     # def prepare(self):
     #     if self.request.headers.get('Content-Type') != 'application/json':
     #         raise HTTPError(status.HTTP_406_NOT_ACCEPTABLE)
+
+    def get_model(self):
+        return self.__class__.model
 
     def post(self):
         response = {}
@@ -42,6 +44,7 @@ class IrisPredictHandler(web.RequestHandler):
                 request_json['petal_length'],
                 request_json['petal_width']
             ]])
+            model = self.get_model()
             response = model.predict(X)
 
             # Make the response.
@@ -58,9 +61,10 @@ class IrisPredictHandler(web.RequestHandler):
     # def on_connection_close(self):
     #     gc.collect()
 
-def make_app(host='localhost'):
+
+def make_app(model, host='localhost'):
     return web.Application([
-        (r"/v1/predict", IrisPredictHandler),
+        (r"/v1/predict", IrisPredictHandler, {"model": model}),
         (r"/healthcheck", HealthCheckHandler),
     ], default_host=host)
 
