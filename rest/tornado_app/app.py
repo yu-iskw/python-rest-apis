@@ -1,6 +1,6 @@
 import os
 
-from time import time
+import gc
 import status
 import numpy as np
 
@@ -34,25 +34,29 @@ class IrisPredictHandler(web.RequestHandler):
         try:
             # Get request body.
             request_json = json_decode(self.request.body)
-            sepal_length = request_json['sepal_length']
-            sepal_width = request_json['sepal_width']
-            petal_length = request_json['petal_length']
-            petal_width = request_json['petal_width']
 
             # Predict.
-            start_time = time()
-            X = np.array([[sepal_length, sepal_width, petal_length, petal_width]])
+            X = np.array([[
+                request_json['sepal_length'],
+                request_json['sepal_width'],
+                request_json['petal_length'],
+                request_json['petal_width']
+            ]])
             response = model.predict(X)
-            inference_time = time() - start_time
 
             # Make the response.
             self.set_status(status.HTTP_200_OK)
             self.write(response)
+
+            # Delete variables just in case.
+            del request_json, X, response
         except Exception as e:
             response = {"message": e}
             self.set_status(status.HTTP_400_BAD_REQUEST)
             self.write(response)
 
+    # def on_connection_close(self):
+    #     gc.collect()
 
 def make_app(host='localhost'):
     return web.Application([

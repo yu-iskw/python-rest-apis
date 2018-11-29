@@ -1,111 +1,102 @@
+# Performance Comparison
+
 ## Environment
 
 - Docker with VirtualBox on Mac
   - CPUs: 2
   - Memory: 2048MB
 
+
 ## Tornado
+The performance looks good.
+Even when the number of requests per second is 500, there was no request error.
+However, the latency with heavy requests, such as 200 and 500 got worse.
 ```
-vegeta attack -rate=1 -duration=30s -body=./resources/test-body.json -targets=./resources/vegeta-target.txt  | vegeta report
-Requests      [total, rate]            30, 1.03
-Duration      [total, attack, wait]    29.004142157s, 29.002108s, 2.034157ms
-Latencies     [mean, 50, 95, 99, max]  2.086642ms, 1.927738ms, 3.860109ms, 4.083394ms, 4.083394ms
-Bytes In      [total, mean]            1746, 58.20
-Bytes Out     [total, mean]            2790, 93.00
+vegeta report docs/performance_tests/tornado/connections-10000_rate-10_duration-60s.bin
+Requests      [total, rate]            600, 10.02
+Duration      [total, attack, wait]    59.906787379s, 59.9043s, 2.487379ms
+Latencies     [mean, 50, 95, 99, max]  1.828749ms, 1.632391ms, 2.629051ms, 4.043117ms, 6.89461ms
+Bytes In      [total, mean]            35074, 58.46
+Bytes Out     [total, mean]            55800, 93.00
 Success       [ratio]                  100.00%
-Status Codes  [code:count]             200:30
+Status Codes  [code:count]             200:600
+Error Set:
 
-vegeta attack -rate=10 -duration=30s -body=./resources/test-body.json -targets=./resources/vegeta-target.txt  | vegeta report
-Requests      [total, rate]            300, 10.03
-Duration      [total, attack, wait]    29.903338851s, 29.901723s, 1.615851ms
-Latencies     [mean, 50, 95, 99, max]  1.897443ms, 1.80096ms, 2.614129ms, 3.516101ms, 4.471384ms
-Bytes In      [total, mean]            17546, 58.49
-Bytes Out     [total, mean]            27900, 93.00
-Success       [ratio]                  100.00%
-Status Codes  [code:count]             200:300
-
-vegeta attack -rate=100 -duration=30s -body=./resources/test-body.json -targets=./resources/vegeta-target.txt  | vegeta report
-Requests      [total, rate]            3000, 100.02
-Duration      [total, attack, wait]    29.994395327s, 29.99273s, 1.665327ms
-Latencies     [mean, 50, 95, 99, max]  1.828685ms, 1.734405ms, 2.37063ms, 3.129067ms, 11.410814ms
-Bytes In      [total, mean]            175493, 58.50
-Bytes Out     [total, mean]            279000, 93.00
-Success       [ratio]                  100.00%
-Status Codes  [code:count]             200:3000
-
-vegeta attack -rate=200 -duration=30s -body=./resources/test-body.json -targets=./resources/vegeta-target.txt  | vegeta report
-Requests      [total, rate]            6000, 200.03
-Duration      [total, attack, wait]    29.997880914s, 29.995952s, 1.928914ms
-Latencies     [mean, 50, 95, 99, max]  1.807301ms, 1.68855ms, 2.304118ms, 3.952279ms, 13.551514ms
-Bytes In      [total, mean]            351050, 58.51
+vegeta report docs/performance_tests/tornado/connections-10000_rate-100_duration-60s.bin
+Requests      [total, rate]            6000, 100.01
+Duration      [total, attack, wait]    59.994474682s, 59.992756s, 1.718682ms
+Latencies     [mean, 50, 95, 99, max]  1.944571ms, 1.679781ms, 3.141051ms, 5.54105ms, 16.418344ms
+Bytes In      [total, mean]            350829, 58.47
 Bytes Out     [total, mean]            558000, 93.00
 Success       [ratio]                  100.00%
 Status Codes  [code:count]             200:6000
+Error Set:
 
-vegeta attack -rate=500 -duration=30s -body=./resources/test-body.json -targets=./resources/vegeta-target.txt  | vegeta report
-Requests      [total, rate]            15000, 500.01
-Duration      [total, attack, wait]    30.001395992s, 29.999424s, 1.971992ms
-Latencies     [mean, 50, 95, 99, max]  4.038657ms, 1.661907ms, 16.909197ms, 41.32897ms, 150.487838ms
-Bytes In      [total, mean]            877292, 58.49
-Bytes Out     [total, mean]            1395000, 93.00
+vegeta report docs/performance_tests/tornado/connections-10000_rate-200_duration-60s.bin
+Requests      [total, rate]            12000, 200.01
+Duration      [total, attack, wait]    59.999445856s, 59.997849s, 1.596856ms
+Latencies     [mean, 50, 95, 99, max]  2.532286ms, 1.813773ms, 4.899022ms, 13.891933ms, 132.293263ms
+Bytes In      [total, mean]            701373, 58.45
+Bytes Out     [total, mean]            1116000, 93.00
 Success       [ratio]                  100.00%
-Status Codes  [code:count]             200:15000
+Status Codes  [code:count]             200:12000
+Error Set:
 
-vegeta attack -rate=1000 -duration=30s -body=./resources/test-body.json -targets=./resources/vegeta-target.txt  | vegeta report
-Requests      [total, rate]            30000, 1000.00
-Duration      [total, attack, wait]    39.082603025s, 30.000118s, 9.082485025s
-Latencies     [mean, 50, 95, 99, max]  2.193429633s, 37.887125ms, 6.178168548s, 27.998390323s, 30.672134273s
-Bytes In      [total, mean]            873755, 29.13
-Bytes Out     [total, mean]            1391280, 46.38
-Success       [ratio]                  49.87%
-Status Codes  [code:count]             0:15040  200:14960
+vegeta report docs/performance_tests/tornado/connections-10000_rate-500_duration-60s.bin
+Requests      [total, rate]            30000, 500.00
+Duration      [total, attack, wait]    1m0.034729725s, 1m0.000241s, 34.488725ms
+Latencies     [mean, 50, 95, 99, max]  15.124922ms, 2.981665ms, 68.108087ms, 166.009562ms, 418.70105ms
+Bytes In      [total, mean]            1755235, 58.51
+Bytes Out     [total, mean]            2790000, 93.00
+Success       [ratio]                  100.00%
+Status Codes  [code:count]             200:30000
+Error Set:
 ```
-
 
 ## uWSGI
+- Workers: 2
+- Max Requests to restart worker: 1000000
+The performance is quite bad, especially when the number of requests is high.
+Even when the number of requests per second is 100, there were 21 request error.
+Moreover, the success ratio with 500 requests/sec is just 59.92%.
 ```
-vegeta attack -rate=1 -duration=30s -body=./resources/test-body.json -targets=./resources/vegeta-target.txt | vegeta report
-Requests      [total, rate]            300, 10.03
-Duration      [total, attack, wait]    29.907040422s, 29.904713s, 2.327422ms
-Latencies     [mean, 50, 95, 99, max]  18.806405ms, 2.490402ms, 3.906145ms, 684.125646ms, 931.440798ms
-Bytes In      [total, mean]            16936, 56.45
-Bytes Out     [total, mean]            27900, 93.00
+vegeta report docs/performance_tests/uwsgi/connections-10000_rate-10_duration-60s.bin
+Requests      [total, rate]            600, 10.02
+Duration      [total, attack, wait]    59.908318275s, 59.90622s, 2.098275ms
+Latencies     [mean, 50, 95, 99, max]  2.59435ms, 2.210323ms, 3.173889ms, 7.229488ms, 101.154957ms
+Bytes In      [total, mean]            33907, 56.51
+Bytes Out     [total, mean]            55800, 93.00
 Success       [ratio]                  100.00%
-Status Codes  [code:count]             200:300
+Status Codes  [code:count]             200:600
+Error Set:
 
-vegeta attack -rate=10 -duration=30s -body=./resources/test-body.json -targets=./resources/vegeta-target.txt | vegeta report
-Requests      [total, rate]            300, 10.03
-Duration      [total, attack, wait]    29.909152824s, 29.906657s, 2.495824ms
-Latencies     [mean, 50, 95, 99, max]  19.746326ms, 2.489848ms, 4.738031ms, 710.990834ms, 956.71541ms
-Bytes In      [total, mean]            16926, 56.42
-Bytes Out     [total, mean]            27900, 93.00
-Success       [ratio]                  100.00%
-Status Codes  [code:count]             200:300
+vegeta report docs/performance_tests/uwsgi/connections-10000_rate-100_duration-60s.bin
+Requests      [total, rate]            6000, 100.01
+Duration      [total, attack, wait]    59.994736705s, 59.992588s, 2.148705ms
+Latencies     [mean, 50, 95, 99, max]  3.089328ms, 2.9952ms, 4.249686ms, 8.648625ms, 40.512811ms
+Bytes In      [total, mean]            337620, 56.27
+Bytes Out     [total, mean]            556047, 92.67
+Success       [ratio]                  99.65%
+Status Codes  [code:count]             0:21  200:5979
+Error Set:
 
-vegeta attack -rate=100 -duration=30s -body=./resources/test-body.json -targets=./resources/vegeta-target.txt | vegeta report
-Requests      [total, rate]            3000, 100.03
-Duration      [total, attack, wait]    29.993963647s, 29.991128s, 2.835647ms
-Latencies     [mean, 50, 95, 99, max]  23.259968ms, 2.474543ms, 9.441168ms, 761.858484ms, 1.006375068s
-Bytes In      [total, mean]            167686, 55.90
-Bytes Out     [total, mean]            276396, 92.13
-Success       [ratio]                  99.07%
-Status Codes  [code:count]             0:28  200:2972
+vegeta report docs/performance_tests/uwsgi/connections-10000_rate-200_duration-60s.bin
+Requests      [total, rate]            12000, 200.01
+Duration      [total, attack, wait]    59.999453143s, 59.997282s, 2.171143ms
+Latencies     [mean, 50, 95, 99, max]  3.175319ms, 2.360318ms, 7.224099ms, 18.661882ms, 59.256829ms
+Bytes In      [total, mean]            657614, 54.80
+Bytes Out     [total, mean]            1083450, 90.29
+Success       [ratio]                  97.08%
+Status Codes  [code:count]             0:350  200:11650
+Error Set:
 
-vegeta attack -rate=200 -duration=30s -body=./resources/test-body.json -targets=./resources/vegeta-target.txt | vegeta report
-Requests      [total, rate]            6000, 200.02
-Duration      [total, attack, wait]    29.998467861s, 29.996261s, 2.206861ms
-Latencies     [mean, 50, 95, 99, max]  29.328119ms, 2.392093ms, 25.937609ms, 910.62678ms, 1.012839538s
-Bytes In      [total, mean]            320315, 53.39
-Bytes Out     [total, mean]            527868, 87.98
-Success       [ratio]                  94.60%
-Status Codes  [code:count]             0:324  200:5676
-
-vegeta attack -rate=500 -duration=30s -body=./resources/test-body.json -targets=./resources/vegeta-target.txt | vegeta report
-Requests      [total, rate]            15000, 499.87
-Duration      [total, attack, wait]    57.127278866s, 30.007829s, 27.119449866s
-Latencies     [mean, 50, 95, 99, max]  646.793683ms, 12.953078ms, 3.057501821s, 7.648019851s, 28.326067866s
-Bytes In      [total, mean]            452040, 30.14
-Bytes Out     [total, mean]            746604, 49.77
-Success       [ratio]                  53.52%
-Status Codes  [code:count]             0:6972  200:8028
+vegeta report docs/performance_tests/uwsgi/connections-10000_rate-500_duration-60s.bin
+Requests      [total, rate]            30000, 500.00
+Duration      [total, attack, wait]    1m28.565415184s, 1m0.000059s, 28.565356184s
+Latencies     [mean, 50, 95, 99, max]  336.064636ms, 109.484804ms, 1.142374372s, 4.838128038s, 29.577282828s
+Bytes In      [total, mean]            1014252, 33.81
+Bytes Out     [total, mean]            1671675, 55.72
+Success       [ratio]                  59.92%
+Status Codes  [code:count]             0:12025  200:17975
+Error Set:
 ```
