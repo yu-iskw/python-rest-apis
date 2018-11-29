@@ -8,7 +8,7 @@ services:
      - "8080:8080"
     environment:
       - NUM_WORKERS=2
-      - MAX_REQUESTS=10000
+      - MAX_REQUESTS=1000000
     volumes:
       - ~/.config/:/root/.config:rw
     healthcheck:

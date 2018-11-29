@@ -40,10 +40,8 @@ class IrisPredictHandler(web.RequestHandler):
             petal_width = request_json['petal_width']
 
             # Predict.
-            start_time = time()
             X = np.array([[sepal_length, sepal_width, petal_length, petal_width]])
             response = model.predict(X)
-            inference_time = time() - start_time
 
             # Make the response.
             self.set_status(status.HTTP_200_OK)
