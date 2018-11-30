@@ -9,15 +9,21 @@ from flask_restful import Resource, Api, reqparse
 from rest.model.iris import IrisModel
 from rest.utils import get_project_dir
 
+# Create the flask application.
+from rest.uwsgi.logger import get_logger
+
 app = Flask(__name__)
 app.config.from_pyfile('./config.py')
 api = Api(app)
 
+# Create logger
+logger = get_logger()
+
 # Load keras application
-app.logger.info("start loading model")
+logger.info("start loading model")
 model_path = os.path.join(get_project_dir(), 'model', 'iris.joblib')
 model = IrisModel(model_path=model_path)
-app.logger.info("end loading model")
+logger.info("end loading model")
 
 
 class HealthCheckApi(Resource):
@@ -49,6 +55,7 @@ class MobileNetApi(Resource):
         try:
             X = np.array([[sepal_length, sepal_width, petal_length, petal_width]])
             result = model.predict(X)
+            logger.info({"message": result})
             return jsonify(result)
         except Exception as e:
             return {"status": 404, "Error": "{}".format(e.message)}, 404
