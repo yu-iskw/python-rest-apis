@@ -7,6 +7,11 @@ import numpy as np
 from tornado import web
 from tornado.escape import json_decode
 
+from rest.uwsgi.logger import get_logger
+
+# Create the logger.
+logger = get_logger()
+
 
 class HealthCheckHandler(web.RequestHandler):
 
@@ -46,6 +51,8 @@ class IrisPredictHandler(web.RequestHandler):
             ]])
             model = self.get_model()
             response = model.predict(X)
+
+            logger.info({"message": response})
 
             # Make the response.
             self.set_status(status.HTTP_200_OK)
