@@ -1,10 +1,13 @@
 import argparse
 from time import time
 
+from mlxtend.classifier import LogisticRegression
 from sklearn.datasets import load_iris
+from sklearn.ensemble import VotingClassifier
 from sklearn.externals import joblib
 from sklearn.metrics import classification_report
 from sklearn.model_selection import GridSearchCV, train_test_split
+from sklearn.naive_bayes import GaussianNB, BernoulliNB
 from sklearn.tree import DecisionTreeClassifier
 
 
@@ -35,12 +38,22 @@ class IrisModel(object):
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1)
 
         # Train the model.
-        clf = DecisionTreeClassifier(random_state=42)
+        dt = DecisionTreeClassifier(random_state=42)
+        bnb = BernoulliNB()
+        gnb = GaussianNB()
+        clf = VotingClassifier(estimators=[
+            ('dt', dt),
+            ('gnb', gnb),
+            ('bnb', bnb),
+        ], voting='soft')
         params = {
-            'max_depth': list(range(1, 20)),
-            'criterion': ['gini', 'entropy'],
+            'dt__max_depth': list(range(2, 5)),
+            'dt__criterion': ['gini', 'entropy'],
+            'gnb__var_smoothing': [1e-09, 1e-08, 1e-07],
+            'bnb__alpha': [1.0, 0.1, 0.01],
         }
-        grid_search = GridSearchCV(clf, param_grid=params, cv=5, scoring='accuracy')
+        grid_search = GridSearchCV(clf, param_grid=params, cv=5, scoring='accuracy',
+                                   n_jobs=-1, verbose=2)
         grid_search.fit(X_train, y_train)
 
         # Show best score and parameters.

@@ -27,3 +27,4 @@ dependencies:
   - pip:
     - google-cloud-storage==1.13.0
     - python-status
+    - mlxtend==0.14.0

@@ -2,21 +2,27 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
+import os
 import json
 import status
 
 from tornado.testing import AsyncHTTPTestCase
+
+from rest.model.iris import IrisModel
 from rest.tornado_app import app
 
 # compatible importing urllib for python2 and 3.
 from future.standard_library import install_aliases
+
+from rest.utils import get_project_dir
+
 install_aliases()
 from urllib.parse import urlencode  # noqa: E402
 
 
 class TestHealthCheckHandler(AsyncHTTPTestCase):
     def get_app(self):
-        return app.make_app()
+        return app.make_app(model=None)
 
     def test_get(self):
         response = self.fetch('/healthcheck')
@@ -26,7 +32,9 @@ class TestHealthCheckHandler(AsyncHTTPTestCase):
 class TestIrisPredictorHandler(AsyncHTTPTestCase):
 
     def get_app(self):
-        return app.make_app()
+        model_path = os.path.join(get_project_dir(), 'model', 'iris.joblib')
+        model = IrisModel(model_path=model_path)
+        return app.make_app(model=model)
 
     def test_post_with_valid_params(self):
         headers = {'Content-Type': 'application/json'}
